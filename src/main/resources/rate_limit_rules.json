@@ -1,0 +1,14 @@
+{
+  "status": {
+    "limit": 2,
+    "intervalInSeconds": 60
+  },
+  "news": {
+    "limit": 1,
+    "intervalInSeconds": 86400
+  },
+  "marketing": {
+    "limit": 3,
+    "intervalInSeconds": 3600
+  }
+}

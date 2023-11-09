@@ -1,28 +1,22 @@
 package org.example.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RateLimitRule {
-    @JsonProperty("limit")
+
     private int limit;
-    @JsonProperty("intervalInSeconds")
     private long intervalInSeconds;
-    private final Map<String, Queue<Long>> userTimestamps;
-
-    public RateLimitRule() {
-        this.userTimestamps = new ConcurrentHashMap<>();
-    }
-
-    public RateLimitRule(int limit, long intervalInSeconds) {
-        this.limit = limit;
-        this.intervalInSeconds = intervalInSeconds;
-        this.userTimestamps = new ConcurrentHashMap<>();
-    }
+    private final Map<String, Queue<Long>> userTimestamps = new ConcurrentHashMap<>();
 
     public boolean isRateLimited(String userId) {
         Queue<Long> timestamps = userTimestamps.get(userId);
@@ -44,4 +38,5 @@ public class RateLimitRule {
             timestamps.poll();
         }
     }
+
 }

@@ -1,6 +1,7 @@
 package org.example.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.AllArgsConstructor;
 import org.example.Gateway;
 import org.example.exception.InvalidNotificationTypeException;
 import org.example.exception.RateLimitExceededException;
@@ -13,15 +14,11 @@ import org.example.util.FileUtil;
 import java.io.IOException;
 import java.util.Map;
 
+@AllArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
     private final Gateway gateway;
-    private final Map<String, RateLimitRule> rateLimitRules;
-
-    public NotificationServiceImpl(Gateway gateway) {
-        this.gateway = gateway;
-        this.rateLimitRules = loadRateLimitRules();
-    }
+    private final Map<String, RateLimitRule> rateLimitRules = loadRateLimitRules();
 
     @Override
     public void send(Notification notification) {
@@ -46,5 +43,6 @@ public class NotificationServiceImpl implements NotificationService {
         }
         return rateLimitRuleMap;
     }
+
 }
 

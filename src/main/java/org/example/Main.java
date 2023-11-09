@@ -13,14 +13,7 @@ public class Main {
         int successfulNotificationsCount = 0;
         int errorNotificationsCount = 0;
         NotificationService notificationService = new NotificationServiceImpl(new Gateway());
-        List<Notification> notifications = new ArrayList<>();
-        notifications.add(new Notification("unknown", "user", "???"));
-        notifications.add(new Notification("news", "user", "This is a new"));
-        notifications.add(new Notification("status", "user", "This is a status update"));
-        notifications.add(new Notification("marketing", "user", "This is a marketing message"));
-        notifications.add(new Notification("marketing", "user", "This another marketing message"));
-        notifications.add(new Notification("marketing", "user", "This another marketing message"));
-        notifications.add(new Notification("marketing", "user", "This marketing message will be rejected"));
+        List<Notification> notifications = createSampleNotifications();
         for (Notification notification : notifications) {
             try {
                 notificationService.send(notification);
@@ -32,5 +25,17 @@ public class Main {
         }
         System.out.println("Sent " + successfulNotificationsCount + " notifications.");
         System.out.println("Encountered " + errorNotificationsCount + " errors.");
+    }
+
+    private static List<Notification> createSampleNotifications() {
+        List<Notification> notifications = new ArrayList<>();
+        notifications.add(new Notification("news", "user", "Breaking news!"));
+        notifications.add(new Notification("status", "user", "This is a status update"));
+        notifications.add(new Notification("marketing", "user", "This is a marketing message"));
+        notifications.add(new Notification("unknown", "user", "???"));
+        notifications.add(new Notification("marketing", "user", "This another marketing message"));
+        notifications.add(new Notification("marketing", "user", "This another marketing message"));
+        notifications.add(new Notification("marketing", "user", "This marketing message will be rejected"));
+        return notifications;
     }
 }

@@ -1,7 +1,5 @@
 package org.example.model;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.LinkedList;
@@ -10,9 +8,9 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class RateLimitRule {
+
+    private static final long MILLISECONDS_PER_SECOND = 1000;
 
     private int limit;
     private long intervalInSeconds;
@@ -21,9 +19,8 @@ public class RateLimitRule {
     public boolean isRateLimited(String userId) {
         Queue<Long> timestamps = userTimestamps.get(userId);
         if (timestamps == null) return false;
-        long currentTime = System.currentTimeMillis();
         int count = timestamps.size();
-        removeExpiredTimestamps(timestamps, currentTime);
+        removeExpiredTimestamps(timestamps, System.currentTimeMillis());
         return count >= limit;
     }
 
@@ -32,11 +29,11 @@ public class RateLimitRule {
     }
 
     private void removeExpiredTimestamps(Queue<Long> timestamps, long currentTime) {
-        while (!timestamps.isEmpty()) {
-            long intervalInMilliseconds = intervalInSeconds * 1000;
-            if (!(currentTime - timestamps.peek() > intervalInMilliseconds)) break;
-            timestamps.poll();
-        }
+        timestamps.removeIf(timestamp -> isExpiredTimestamp(currentTime, timestamp));
+    }
+
+    private boolean isExpiredTimestamp(long currentTime, Long timestamp) {
+        return currentTime - timestamp > intervalInSeconds * MILLISECONDS_PER_SECOND;
     }
 
 }

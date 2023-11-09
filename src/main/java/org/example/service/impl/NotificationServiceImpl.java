@@ -22,27 +22,37 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void send(Notification notification) {
-        RateLimitRule rule = rateLimitRules.get(notification.getType());
-        if (rule == null) {
-            throw new InvalidNotificationTypeException("Invalid notification type.");
-        }
-        if (rule.isRateLimited(notification.getUserId())) {
-            throw new RateLimitExceededException("Rate limit exceeded. Notification rejected.");
-        } else {
-            gateway.send(notification);
-            rule.incrementNotificationCount(notification.getUserId());
-        }
+        RateLimitRule rule = getRateLimitRule(notification);
+        validateNotificationType(rule);
+        validateRateLimit(notification, rule);
+        gateway.send(notification);
+        rule.incrementNotificationCount(notification.getUserId());
     }
 
     private Map<String, RateLimitRule> loadRateLimitRules() {
         Map<String, RateLimitRule> rateLimitRuleMap;
         try {
-            rateLimitRuleMap = FileUtil.readJsonFile(new TypeReference<>() {});
+            rateLimitRuleMap = FileUtil.readRateLimitRulesFile(new TypeReference<>() {});
         } catch (IOException exception) {
             throw new RateLimitRulesLoadingException("Error loading rate limit rules from the external source.");
         }
         return rateLimitRuleMap;
     }
 
-}
+    private RateLimitRule getRateLimitRule(Notification notification) {
+        return rateLimitRules.get(notification.getType());
+    }
 
+    private void validateNotificationType(RateLimitRule rule) {
+        if (rule == null) {
+            throw new InvalidNotificationTypeException("Invalid notification type.");
+        }
+    }
+
+    private void validateRateLimit(Notification notification, RateLimitRule rule) {
+        if (rule.isRateLimited(notification.getUserId())) {
+            throw new RateLimitExceededException("Rate limit exceeded. Notification rejected.");
+        }
+    }
+
+}
